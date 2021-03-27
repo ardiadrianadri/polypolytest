@@ -123,3 +123,131 @@ And finally, the button pressed. In the mockup, the button that was clicked has 
 }
 ```
 
+# STEP-2: Keyboard interactive
+
+In this step, I will make the calculator accessible using the computer keyboard. So the first thing is the DRY rule (Do not repeat yourself) and that means I have to move all the logic that fires when a button is clicked into independent functions that I can reuse when the user presses a key:
+
+```javascript
+// Function that prints a digit in the calculator screen
+function digitPressed(digit) {
+    return () => { elements.display.textContent += digit; }
+}
+
+// Function that prints the decimal separator in the calculator screen
+function separatorPressed() {
+    const text = elements.display.textContent;
+    if (text.length && text.indexOf(".") === -1) {
+        elements.display.textContent += ".";
+    }
+}
+
+// Function that clears the calculator screen
+function clearPressed() {
+    elements.display.textContent = "";
+    stored = null;
+}
+
+// Function that adds an operation when an operation button is clicked
+function operationPressed(opCode) {
+    return () => {
+        stored = {
+            text: stored ? calculate() : elements.display.textContent,
+            opCode
+        };
+        elements.display.textContent = "";
+    }
+}
+
+// Function that gets the result of the operation
+function calculatePressed() {
+    if (!stored) {
+        return;
+    }
+    elements.display.textContent = calculate();
+    stored = null;
+}
+```
+Once I extract the business logic for the buttons into separate functions, I have to change the click events to execute those functions.
+
+```javascript
+function setUpEntryButtons() {
+    for (let [digit, button] of Object.entries(elements.digitButtons)) {
+        button.addEventListener("click", digitPressed(digit)); //<-- call the new function
+    }
+
+    elements.separatorButton.addEventListener("click", separatorPressed);//<-- call the new function
+
+    elements.clearButton.addEventListener("click", clearPressed);//<-- call the new function
+}
+
+function setUpOperationButtons() {
+    for (let [opCode, button] of Object.entries(elements.operationButtons))
+        button.addEventListener("click", operationPressed(opCode));//<-- call the new function
+}
+
+function setUpCalculateButton() {
+    elements.calculateButton.addEventListener("click", calculatePressed);//<-- call the new function
+}
+```
+Now that I have the separate business logic, I can focus on writing the function that sets the keyboard event to execute this business logic:
+
+```javascript
+function setUpKeyboardEvents () {
+    /*
+      From my point of view a map with all the html buttons for operations is a solution more elegant than a switch or a nested if
+    */
+    const opElements = {
+        '+': document.getElementById('btn-add'),
+        '-': document.getElementById('btn-subtract'),
+        '*': document.getElementById('btn-multiply'),
+        '/': document.getElementById('btn-divide'),
+    }
+
+    document.addEventListener('keypress', function keyEvenPressed (event) {
+        /*
+         This preventDefault prevents errors when trying to calculate the result of an operation. How pressing a button means moving the focus of the browser to this button, if we do not execute preventDefault two actions will occur when the user presses the Enter key:
+            * A button click event with focus will be fired first. That usually ends with an unexpected extra number in the second operand.
+            * Second, the result of the operation is displayed on the calculator screen, but it is an wrong result because our enter event has added a new number to the end of the second operarand.
+          
+           This is why this event.preventDefault is so important
+        */
+        event.preventDefault();
+        if (digits.includes(event.key)) {
+            // Code run when a digit key is pressed
+            document.getElementById(`btn-${event.key}`).focus();
+            digitPressed(event.key)();
+        } else if (event.key === '.') {
+            // Code run when the point key is pressed
+            document.getElementById('btn-separator').focus();
+            separatorPressed();
+        } else if ((event.key === 'c') || (event.key === 'C')) {
+            /*
+             The code executes when the "c" or "C" key is pressed. I thought it would be nice to clear the calculator screen when the user presses c because the clear button has a "C" printed on it.
+            */
+            document.getElementById('btn-clear').focus();
+            clearPressed();
+        } else if (Object.keys(operations).includes(event.key)) {
+            // Code run when the user press a operation key
+            opElements[event.key].focus();
+            operationPressed(event.key)();
+        } else if ((event.key === '=') || (event.key === 'Enter')) {
+            /*
+              Code run when the user press the key "=" or Enter. Same reason than the clear button. The key to calculate the result of the operation has an "=" sign so I thought that it could be intuitive for the user that the result of the operation gets calculated when the user press the "=" in the same way that happen when it press Enter
+            */
+            document.getElementById('btn-calculate').focus();
+            calculatePressed();
+        }
+    });
+
+    /*
+      The backspace key is not a printable key so the event "keypress" doesn't work for it. For this reason I had to listen another key event just for the backspace
+    */
+    document.addEventListener('keyup', function keyEventBackspace (event) {
+        event.preventDefault();
+        if (event.key === 'Backspace') {
+            document.getElementById('btn-clear').focus();
+            clearPressed();
+        }
+    });
+}
+```
