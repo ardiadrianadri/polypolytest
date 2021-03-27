@@ -287,3 +287,65 @@ function setMoveSwipe() {
     }, false);
 }
 ```
+
+# STEP-4: Desktop version
+As I did in step-0, before modifying the style, I took the mockup from the desktop version and tried to pull out all the sizes that are different from the mobile version:
+
+![](./desings/calculator-desktop-mesures.png)
+
+Once I get the measurements, I added these values to the css variables that I created in step 1:
+
+```css
+:root {
+    --calcultor-mobile-width: 385px;
+    --calculator-desktop-width: 411px; /* <-- calulator width for desktop version*/
+    --display-mobile-height: 102px;
+    --display-desktop-height: 60px; /* <-- display height for desktop version*/
+    --display-mobile-font-size: 42px;
+    --display-font-color: #000000;
+    --diplay-background-color: #007800;
+    --color-background-calculator: #262626;
+    --calculator-margin: 12px;
+    --general-border-radius: 4px;
+    --button-margin: 6px;
+    --button-mobile-width: 84px;
+    --button-desktop-width: 89px; /* <-- button width for desktop version */
+    --button-mobile-height: 82px;
+    --button-desktop-height: 60px; /* <-- button height for desktop version */
+    --button-font-size: 31px;
+    --button-font-color: #ffffff;
+    --button-background-color: #3A3A3A;
+    --button-press-background-color: #A3A3A3;
+    --button-clear-mobile-width: 277px;
+    --button-clear-desktop-width: 291px; /* <-- button clear width for desktop version */
+    --button-0-mobile-width: 181px;
+    --button-0-desktop-width: 190px; /* <-- button 0 width for desktop version */
+}
+```
+
+After that I created a media query to overwrite the default mobile css values with the desktop values if the screen width is equal to or greater than 768px; As the requirements of problem one indicate:
+
+```css
+@media(min-width: 768px) {
+    .calculator {
+      width: var(--calculator-desktop-width); /* <-- Overwrite the width of the calculator*/
+    }
+
+    #display {
+      height: var(--display-desktop-height); /* <-- Overwrite the height of the calculator display*/
+    }
+
+    .calc-button {
+      width: var(--button-desktop-width); /* <-- Overwrite the width of the buttons */
+      height: var(--button-desktop-height); /* <-- Overwrite the height of the buttons */
+    }
+
+    #btn-clear {
+      width: var(--button-clear-desktop-width); /* <-- Overwrite the width of the clear button */
+    }
+
+    #btn-0 {
+      width: var(--button-0-desktop-width); /* <-- Overwrite the width of the 0 button */
+    }
+}
+```
