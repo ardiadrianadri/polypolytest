@@ -145,9 +145,33 @@ function setUpKeyboardEvents () {
     });
 }
 
+function setMoveSwipe() { 
+    let xDown = null;
+
+    elements.display.addEventListener('touchstart', function handleTouchStart (event) {
+        const firstTouch = event.touches[0];
+        xDown = firstTouch.clientX;
+    }, false);
+
+    elements.display.addEventListener('touchmove', function handleTouchMove(event) {
+        if (!xDown) {
+            return;
+        }
+
+        const xUp = event.touches[0].clientX;
+
+        if (xDown > xUp) {
+            document.getElementById('btn-clear').focus();
+            clearPressed();
+        }
+
+    }, false);
+}
+
 (() => {
     setUpEntryButtons();
     setUpOperationButtons();
     setUpCalculateButton();
     setUpKeyboardEvents();
+    setMoveSwipe();
 })();
