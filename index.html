@@ -6,7 +6,9 @@
     <style>
       :root {
         --calcultor-mobile-width: 385px;
+        --calculator-desktop-width: 411px;
         --display-mobile-height: 102px;
+        --display-desktop-height: 60px;
         --display-mobile-font-size: 42px;
         --display-font-color: #000000;
         --diplay-background-color: #007800;
@@ -15,13 +17,17 @@
         --general-border-radius: 4px;
         --button-margin: 6px;
         --button-mobile-width: 84px;
+        --button-desktop-width: 89px;
         --button-mobile-height: 82px;
+        --button-desktop-height: 60px;
         --button-font-size: 31px;
         --button-font-color: #ffffff;
         --button-background-color: #3A3A3A;
         --button-press-background-color: #A3A3A3;
         --button-clear-mobile-width: 277px;
+        --button-clear-desktop-width: 291px;
         --button-0-mobile-width: 181px;
+        --button-0-desktop-width: 190px;
       }
       #display {
           display: flex;
@@ -74,6 +80,29 @@
 
       #btn-0 {
         width: var(--button-0-mobile-width);
+      }
+
+      @media(min-width: 768px) {
+        .calculator {
+          width: var(--calculator-desktop-width);
+        }
+
+        #display {
+          height: var(--display-desktop-height);
+        }
+
+        .calc-button {
+          width: var(--button-desktop-width);
+          height: var(--button-desktop-height);
+        }
+
+        #btn-clear {
+          width: var(--button-clear-desktop-width);
+        }
+
+        #btn-0 {
+          width: var(--button-0-desktop-width);
+        }
       }
     </style>
   </head>
