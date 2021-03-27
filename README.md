@@ -251,3 +251,39 @@ function setUpKeyboardEvents () {
     });
 }
 ```
+
+# STEP-3: Swipes
+In this step, I'll add the swipe left action to clear the calculator screen. To do this, I will create a "setMoveSwipe" function that will capture finger movements on the calculator display to decide whether or not a left swipe has occurred:
+
+```javascript
+function setMoveSwipe() { 
+    // This variable will store the position of the finger in the X axis when the user touch the calculator display
+    let xDown = null;
+
+    /*
+      Here I listen to the touchstart event on the calculator screen and save the position of the finger in the variable xDown
+    */
+    elements.display.addEventListener('touchstart', function handleTouchStart (event) {
+        const firstTouch = event.touches[0];
+        xDown = firstTouch.clientX;
+    }, false);
+
+    // Here I listen the touchmove event that is fired when the finger moves on the calculator screen
+    elements.display.addEventListener('touchmove', function handleTouchMove(event) {
+        if (!xDown) {
+            return;
+        }
+
+        /*
+            The logic is easy, if the user moves his finger from right to left it means that the position on the X axis when the user touches the screen is greater than the current position of the finger on the X axis. So what I have to do in this function is to get the current position of the finger. If this position is lower than the previous one, then this is when I have to clear the calculator screen.
+        */
+        const xUp = event.touches[0].clientX;
+
+        if (xDown > xUp) {
+            document.getElementById('btn-clear').focus();
+            clearPressed();
+        }
+
+    }, false);
+}
+```
