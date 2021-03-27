@@ -12,3 +12,114 @@ So once I've decided to focus on problem one and two the question is which of th
 ![](./desings/calculator-mesures.jpg)
 
 Now I'm ready to start with the code.
+
+# STEP-1: Mobile view
+The goal of this step is to add the CSS styles for the mobile view. For that I will use the measurements that I took from the image of the mobile mockup in the previous step. Before I started, I knew from experience that measurements are most likely not as accurate as they should be. When I take the styles of a website from images, there are always small errors that, in the end, make the whole view not look so good. So for easy adjustments I put all measurements in css variables:
+
+```css
+:root {
+  --calcultor-mobile-width: 385px;
+  --display-mobile-height: 102px;
+  --display-mobile-font-size: 42px;
+  --display-font-color: #000000;
+  --diplay-background-color: #007800;
+  --color-background-calculator: #262626;
+  --calculator-margin: 12px;
+  --general-border-radius: 4px;
+  --button-margin: 6px;
+  --button-mobile-width: 84px;
+  --button-mobile-height: 82px;
+  --button-font-size: 31px;
+  --button-font-color: #ffffff;
+  --button-background-color: #3A3A3A;
+  --button-press-background-color: #A3A3A3;
+  --button-clear-mobile-width: 277px;
+  --button-0-mobile-width: 181px;
+}
+```
+
+That way, I have all the measurements taken in one place, which helps a lot when adjustments need to be made.
+
+Now let's talk about the button grid. For me, the easiest way to make a grid is using the flex box. For that, what I need is to declare a fixed width for the whole calculator:
+
+```css
+.calculator {
+  width: var(--calcultor-mobile-width); /*<-- fixed width for the calculator */
+  background-color: var(--color-background-calculator);
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--calculator-margin);
+  border-radius: var(--general-border-radius);
+}
+```
+
+And a fixed width for the buttons
+
+```css
+.calc-button {
+  height: var(--button-mobile-height);
+  width: var(--button-mobile-width); /*<-- fixed width for the buttons*/
+  margin: var(--button-margin);
+  border-radius: var(--general-border-radius);
+  background-color: var(--button-background-color);
+  font-size: var(--button-font-size);
+  color: var(--button-font-color);
+}
+```
+
+After that I put the buttons inside a div which will be the calculator button grid and changed their order to be the same as the mockup:
+
+```html
+ <div class="keyboard"> <!-- This div will be the keyboard grid -->
+    <button class="calc-button" id="btn-clear">C</button> <!-- The order of the buttons is the same as that of the mockup. -->
+    <button class="calc-button" id="btn-divide">/</button><!-- The buttons are from the calc-button class which has all the common -->
+    <button class="calc-button" id="btn-7">7</button>     <!-- CSS styles for calculator buttons -->
+    <button class="calc-button" id="btn-8">8</button>
+    <button class="calc-button" id="btn-9">9</button>
+    <button class="calc-button" id="btn-multiply">*</button>
+    <button class="calc-button" id="btn-4">4</button>
+    <button class="calc-button" id="btn-5">5</button>
+    <button class="calc-button" id="btn-6">6</button>
+    <button class="calc-button" id="btn-subtract">-</button>
+    <button class="calc-button" id="btn-1">1</button>
+    <button class="calc-button" id="btn-2">2</button>
+    <button class="calc-button" id="btn-3">3</button>
+    <button class="calc-button" id="btn-add">+</button>
+    <button class="calc-button" id="btn-0">0</button>
+    <button class="calc-button" id="btn-separator">.</button>
+    <button class="calc-button" id="btn-calculate">=</button>
+  </div>
+```
+The keyboard div will be a wrapped flex screen. That means the browser will display all buttons on the same line until there is no room for the next button. In that case, the browser will place the next button on the next line and so on. That way we can create a perfectly aligned button grid:
+
+```css
+.keyboard {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap; /*<-- this is the key for the buttons grid */
+  justify-content: center;
+  align-items: center;
+}
+```
+
+The only thing left to make the grid the same as the mockup is to change the width of the clear and 0 buttons because they are larger than the other buttons. To do that, the only thing I need to do is overwrite the CSS width using the id selector:
+
+```css
+#btn-clear {
+  width: var(--button-clear-mobile-width); /* <-- width for the clear button */
+}
+
+#btn-0 {
+  width: var(--button-0-mobile-width); /* <-- width for the 0 button */
+}
+```
+
+And finally, the button pressed. In the mockup, the button that was clicked has a different background than the rest of the buttons. If a button is clicked, it means that it has the current focus of the browser. So ... all we have to do is overwrite the background color on the button that has the focus:
+
+```css
+.calc-button:focus {
+  outline: none; /*<-- It removes the default style of the button when it has the focus */
+  background-color: var(--button-press-background-color); /* <-- Overwrite the background color with the focus */
+}
+```
+
