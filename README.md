@@ -349,3 +349,175 @@ After that I created a media query to overwrite the default mobile css values wi
     }
 }
 ```
+
+# STEP-5: Components
+The only thing left to finish the test is to see if I can improve the current code in some way. Being honest, I don't think I can write better code for a one page website. I mean ... the index.js is well structured and the solution is tailored to the requirements. The only point that I think could be improved is the separation by responsibility. I mean ... everything, visual logic and business logic are together and mixed in index.js. It's not a big deal because the app is small, but if I start adding more operations and buttons to the calculator, I'm pretty sure it will be hard to maintain before version 5 or 6. So, to make the app more sustainable and easy to add new features, I will use custom components to separate the visual logic from the business logic. Maybe it's a bit of a overdoing for this test, but seriously, I can't think of another change that could be a significant improvement for this web app.
+
+So what I did was create another project in another repository called [calculator-view](https://github.com/ardiadrianadri/calculator-view). This repository is a project of lit-element libraries, which is the main library for creating standard custom components. To be clear, when I said "standard custom components", I mean that the package resulting from the compilation of this project can work in any web application, including the calculator, without the need for anything else other than the browser itself. This is the main reason why I chose this technology to create the components. 
+
+At the end what I have is a js file called calculator-view.bundled.js which contains two custom components. The first one is the calculator-view. This component have a input attribute which expects to recive an array of buttons objects like this:
+
+```js
+const buttons = [
+        {
+          label: 'C',
+          type: 'clear',
+          value: 'clear',
+          size: 'big',
+          keys: ['c', 'C', 'Backspace']
+        },
+        {
+          label: '/',
+          type: 'operation',
+          value: 'divide',
+          size: 'small',
+          keys: ['/']
+        },
+        {
+          label: '7',
+          type: 'number',
+          value: '7',
+          size: 'small',
+          keys: ['7']
+        },
+        {
+          label: '8',
+          type: 'number',
+          value: '8',
+          size: 'small',
+          keys: ['8']
+        },{
+          label: '9',
+          type: 'number',
+          value: '9',
+          size: 'small',
+          keys: ['9']
+        },{
+          label: '*',
+          type: 'operation',
+          value: 'multiply',
+          size: 'small',
+          keys: ['*']
+        },{
+          label: '4',
+          type: 'number',
+          value: '4',
+          size: 'small',
+          keys: ['4']
+        },{
+          label: '5',
+          type: 'number',
+          value: '5',
+          size: 'small',
+          keys: ['5']
+        },{
+          label: '6',
+          type: 'number',
+          value: '6',
+          size: 'small',
+          keys: ['6']
+        },{
+          label: '-',
+          type: 'operation',
+          value: 'subtract',
+          size: 'small',
+          keys: ['-']
+        },{
+          label: '1',
+          type: 'number',
+          value: '1',
+          size: 'small',
+          keys: ['1']
+        },{
+          label: '2',
+          type: 'number',
+          value: '2',
+          size: 'small',
+          keys: ['2']
+        },{
+          label: '3',
+          type: 'number',
+          value: '3',
+          size: 'small',
+          keys: ['3']
+        },{
+          label: '+',
+          type: 'operation',
+          value: 'add',
+          size: 'small',
+          keys: ['+']
+        },{
+          label: '0',
+          type: 'number',
+          value: '0',
+          size: 'medium',
+          keys: ['0']
+        },{
+          label: '.',
+          type: 'number',
+          value: '.',
+          size: 'small',
+          keys: ['.']
+        },{
+          label: '=',
+          type: 'operation',
+          value: 'calculate',
+          size: 'small',
+          keys: ['=', 'Enter']
+        }
+    ];
+```
+
+Each object in the array represent a button in the calculator and it has five attributes:
+
+* **label**: It is the text that will be rendered inside the button
+* **type**: Indicates if the button store a number, an operation or it is the clear button
+* **value**: It is the value sent in the custom events
+* **size**: It is the size of the button width. It can be small, medium or big
+* **keys**: An array of the computer keys that activate the button
+
+The calculator-view doesn't perform any operation. It only gets the input parameters and emit and event each time the user press an operation button. Nothing more and nothing less. It represent the visual logic
+
+The other component is the calculator-logic. It is a component that does not render any HTML. It only performs calculator operations. To do this, it gets as input an object with the calculator's screen value and an operation to apply to the value. Each time it gets a new input, the calculator-logic gets the last number, applies the last operation to the current number and the last number, and stores the result in a private attribute. If the operation it receives is the "calculate" action, it fires a custom event to return the final result of all operations.
+
+The way these two components work together is simple. At the html level they only need to be in the same body:
+```html
+<calculator-view id="calc-view"></calculator-view>
+<calculator-logic id="calc-logic"></calculator-logic>
+```
+
+In the index.js we must ensure communication between their events. First we get the calculator-view component, give it the list of buttons and listen to its calc-event:
+
+```javascript
+const calculatorComponent = document.getElementById('calc-view');
+calculatorComponent.setAttribute('buttons', JSON.stringify(buttons));
+calculatorComponent.addEventListener('calc-event', onCalculatorViewEvent);
+```
+
+Every time the * calc-event * is fired, we must take the number and the operation within the event detail and give them to the calculator-logic:
+
+```javascript
+function onCalculatorViewEvent(event) {
+  const operation = {
+    number: event.detail.number,
+    operation: event.detail.operation
+  }
+
+  calculatorLogic.setAttribute('calculation', JSON.stringify(operation));
+}
+```
+On the other hand, we have to listen to the event result of the calculator-logic:
+
+```javascript
+const calculatorLogic = document.getElementById('calc-logic');
+calculatorLogic.addEventListener('result', onCalculationResult);
+```
+When the result event is fired we must take the value of the event and put it in the calculator-view display:
+
+```javascript
+function onCalculationResult(event) {
+  calculatorComponent.setAttribute('calculatorDisplay', event.detail.result);
+}
+```
+
+And that's it. The advantages of this approach are that the calculator is easier to maintain and expand. If we want to add new buttons, all we have to do is add new objects within the button matrix ... and this change does not affect the operation of the calculator-logic in any way. On the other hand, adding more operation only involves calculator-logic. It does not affect how the calculator-view works.

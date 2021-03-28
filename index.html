@@ -29,106 +29,12 @@
         --button-0-mobile-width: 181px;
         --button-0-desktop-width: 190px;
       }
-      #display {
-          display: flex;
-          justify-content: start;
-          align-items: center;
-          margin-bottom: var(--general-border-radius);
-          padding-left: var(--calculator-margin);
-          overflow: hidden;
-          height: var(--display-mobile-height);
-          background-color: var(--diplay-background-color);
-          text-align: start;
-          font-size: var(--display-mobile-font-size);
-          color: var(--display-font-color);
-      }
-      .calculator {
-        width: var(--calcultor-mobile-width);
-        background-color: var(--color-background-calculator);
-        margin-left: auto;
-        margin-right: auto;
-        padding: var(--calculator-margin);
-        border-radius: var(--general-border-radius);
-      }
-
-      .keyboard {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .calc-button {
-        height: var(--button-mobile-height);
-        width: var(--button-mobile-width);
-        margin: var(--button-margin);
-        border-radius: var(--general-border-radius);
-        background-color: var(--button-background-color);
-        font-size: var(--button-font-size);
-        color: var(--button-font-color);
-      }
-
-      .calc-button:focus {
-        outline: none;
-        background-color: var(--button-press-background-color);
-      }
-
-      #btn-clear {
-        width: var(--button-clear-mobile-width);
-      }
-
-      #btn-0 {
-        width: var(--button-0-mobile-width);
-      }
-
-      @media(min-width: 768px) {
-        .calculator {
-          width: var(--calculator-desktop-width);
-        }
-
-        #display {
-          height: var(--display-desktop-height);
-        }
-
-        .calc-button {
-          width: var(--button-desktop-width);
-          height: var(--button-desktop-height);
-        }
-
-        #btn-clear {
-          width: var(--button-clear-desktop-width);
-        }
-
-        #btn-0 {
-          width: var(--button-0-desktop-width);
-        }
-      }
     </style>
   </head>
   <body>
-    <div class="calculator">
-      <div id="display"></div>
-      <div class="keyboard">
-        <button class="calc-button" id="btn-clear">C</button>
-        <button class="calc-button" id="btn-divide">/</button>
-        <button class="calc-button" id="btn-7">7</button>
-        <button class="calc-button" id="btn-8">8</button>
-        <button class="calc-button" id="btn-9">9</button>
-        <button class="calc-button" id="btn-multiply">*</button>
-        <button class="calc-button" id="btn-4">4</button>
-        <button class="calc-button" id="btn-5">5</button>
-        <button class="calc-button" id="btn-6">6</button>
-        <button class="calc-button" id="btn-subtract">-</button>
-        <button class="calc-button" id="btn-1">1</button>
-        <button class="calc-button" id="btn-2">2</button>
-        <button class="calc-button" id="btn-3">3</button>
-        <button class="calc-button" id="btn-add">+</button>
-        <button class="calc-button" id="btn-0">0</button>
-        <button class="calc-button" id="btn-separator">.</button>
-        <button class="calc-button" id="btn-calculate">=</button>
-      </div>
-    </div>
+    <calculator-view id="calc-view"></calculator-view>
+    <calculator-logic id="calc-logic"></calculator-logic>
     <script src="index.js"></script>
+    <script src="./components/calculator-view.bundled.js"></script>
   </body>
 </html>
